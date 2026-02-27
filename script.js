@@ -1,61 +1,126 @@
 const canvas = document.getElementById('tetris');
 const context = canvas.getContext('2d');
+const holdCanvas = document.getElementById('holdCanvas');
+const holdCtx = holdCanvas.getContext('2d');
+const nextCanvas = document.getElementById('nextCanvas');
+const nextCtx = nextCanvas.getContext('2d');
 const scoreElement = document.getElementById('score');
 
-context.scale(20, 20); // 放大畫布，這樣我們可以用 1x1 代表一個方塊
+context.scale(20, 20);
+holdCtx.scale(20, 20);
+nextCtx.scale(20, 20);
 
-// 1. 定義各種形狀的方塊 (I, J, L, O, S, T, Z)
+const colors = [null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
+
 function createPiece(type) {
-    if (type === 'T') {
-        return [[0, 1, 0], [1, 1, 1], [0, 0, 0]];
-    } else if (type === 'O') {
-        return [[2, 2], [2, 2]];
-    } else if (type === 'L') {
-        return [[0, 0, 3], [3, 3, 3], [0, 0, 0]];
-    } else if (type === 'J') {
-        return [[4, 0, 0], [4, 4, 4], [0, 0, 0]];
-    } else if (type === 'I') {
-        return [[0, 5, 0, 0], [0, 5, 0, 0], [0, 5, 0, 0], [0, 5, 0, 0]];
-    } else if (type === 'S') {
-        return [[0, 6, 6], [6, 6, 0], [0, 0, 0]];
-    } else if (type === 'Z') {
-        return [[7, 7, 0], [0, 7, 7], [0, 0, 0]];
-    }
+    if (type === 'I') return [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]];
+    if (type === 'L') return [[0, 2, 0], [0, 2, 0], [0, 2, 2]];
+    if (type === 'J') return [[0, 3, 0], [0, 3, 0], [3, 3, 0]];
+    if (type === 'O') return [[4, 4], [4, 4]];
+    if (type === 'Z') return [[5, 5, 0], [0, 5, 5], [0, 0, 0]];
+    if (type === 'S') return [[0, 6, 6], [6, 6, 0], [0, 0, 0]];
+    if (type === 'T') return [[0, 7, 0], [7, 7, 7], [0, 0, 0]];
 }
 
-// 2. 建立遊戲地圖 (12寬 x 20高)
 const arena = Array.from({length: 20}, () => Array(12).fill(0));
 
 const player = {
-    pos: {x: 5, y: 0},
-    matrix: createPiece('T'),
+    pos: {x: 0, y: 0},
+    matrix: null,
     score: 0,
+    hold: null,
+    canHold: true
 };
 
-// 顏色表
-const colors = [null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
+let nextPieces = [];
+const PIECES = 'ILJOTSZ';
 
-// 繪製方塊
-function drawMatrix(matrix, offset) {
+// 初始化預覽隊列
+function refillNext() {
+    while (nextPieces.length < 6) {
+        nextPieces.push(PIECES[Math.floor(Math.random() * PIECES.length)]);
+    }
+}
+
+// 繪製預覽窗格
+function drawPreview(ctx, matrix, offset = {x: 1, y: 1}) {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, 5, 5); // 清除背景
+    if (!matrix) return;
     matrix.forEach((row, y) => {
         row.forEach((value, x) => {
             if (value !== 0) {
-                context.fillStyle = colors[value];
-                context.fillRect(x + offset.x, y + offset.y, 1, 1);
+                ctx.fillStyle = colors[value];
+                ctx.fillRect(x + offset.x, y + offset.y, 1, 1);
             }
         });
     });
 }
 
-// 繪製畫面
-function draw() {
-    context.fillStyle = '#000';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    drawMatrix(arena, {x: 0, y: 0});
-    drawMatrix(player.matrix, player.pos);
+function updateNextDisplay() {
+    nextCtx.fillStyle = '#000';
+    nextCtx.fillRect(0, 0, nextCanvas.width, nextCanvas.height);
+    for (let i = 0; i < 5; i++) {
+        const matrix = createPiece(nextPieces[i]);
+        drawPreview(nextCtx, matrix, {x: 1, y: i * 4 + 1});
+    }
 }
 
-// 碰撞偵測
+function playerReset() {
+    refillNext();
+    const type = nextPieces.shift();
+    player.matrix = createPiece(type);
+    player.pos.y = 0;
+    player.pos.x = Math.floor(arena[0].length / 2) - Math.floor(player.matrix[0].length / 2);
+    player.canHold = true;
+    updateNextDisplay();
+
+    if (collide(arena, player)) {
+        arena.forEach(row => row.fill(0));
+        player.score = 0;
+        updateScore();
+    }
+}
+
+function playerHold() {
+    if (!player.canHold) return;
+    
+    const currentType = getTypeName(player.matrix);
+    if (!player.hold) {
+        player.hold = currentType;
+        playerReset();
+    } else {
+        const temp = player.hold;
+        player.hold = currentType;
+        player.matrix = createPiece(temp);
+        player.pos.y = 0;
+        player.pos.x = Math.floor(arena[0].length / 2) - Math.floor(player.matrix[0].length / 2);
+    }
+    
+    player.canHold = false;
+    drawPreview(holdCtx, createPiece(player.hold));
+}
+
+// 輔助函式：從矩陣抓取類型
+function getTypeName(matrix) {
+    for (let row of matrix) {
+        for (let val of row) {
+            if (val !== 0) return PIECES[val - 1];
+        }
+    }
+}
+
+function hardDrop() {
+    while (!collide(arena, player)) {
+        player.pos.y++;
+    }
+    player.pos.y--;
+    merge(arena, player);
+    playerReset();
+    arenaSweep();
+    dropCounter = 0;
+}
+
 function collide(arena, player) {
     const [m, o] = [player.matrix, player.pos];
     for (let y = 0; y < m.length; ++y) {
@@ -68,7 +133,6 @@ function collide(arena, player) {
     return false;
 }
 
-// 合併方塊到地圖
 function merge(arena, player) {
     player.matrix.forEach((row, y) => {
         row.forEach((value, x) => {
@@ -79,7 +143,6 @@ function merge(arena, player) {
     });
 }
 
-// 旋轉矩陣
 function rotate(matrix, dir) {
     for (let y = 0; y < matrix.length; ++y) {
         for (let x = 0; x < y; ++x) {
@@ -90,8 +153,8 @@ function rotate(matrix, dir) {
     else matrix.reverse();
 }
 
-// 消行邏輯
 function arenaSweep() {
+    let rowCount = 1;
     outer: for (let y = arena.length - 1; y > 0; --y) {
         for (let x = 0; x < arena[y].length; ++x) {
             if (arena[y][x] === 0) continue outer;
@@ -99,12 +162,16 @@ function arenaSweep() {
         const row = arena.splice(y, 1)[0].fill(0);
         arena.unshift(row);
         ++y;
-        player.score += 10;
-        scoreElement.innerText = player.score;
+        player.score += rowCount * 10;
+        rowCount *= 2;
     }
+    updateScore();
 }
 
-// 玩家掉落
+function updateScore() {
+    scoreElement.innerText = player.score;
+}
+
 function playerDrop() {
     player.pos.y++;
     if (collide(arena, player)) {
@@ -116,7 +183,6 @@ function playerDrop() {
     dropCounter = 0;
 }
 
-// 左右移動
 function playerMove(dir) {
     player.pos.x += dir;
     if (collide(arena, player)) {
@@ -124,7 +190,6 @@ function playerMove(dir) {
     }
 }
 
-// 旋轉處理
 function playerRotate(dir) {
     const pos = player.pos.x;
     let offset = 1;
@@ -140,19 +205,6 @@ function playerRotate(dir) {
     }
 }
 
-// 重置玩家方塊
-function playerReset() {
-    const pieces = 'ILJOTSZ';
-    player.matrix = createPiece(pieces[pieces.length * Math.random() | 0]);
-    player.pos.y = 0;
-    player.pos.x = (arena[0].length / 2 | 0) - (player.matrix[0].length / 2 | 0);
-    if (collide(arena, player)) {
-        arena.forEach(row => row.fill(0)); // 遊戲結束，清空
-        player.score = 0;
-        scoreElement.innerText = player.score;
-    }
-}
-
 let dropCounter = 0;
 let dropInterval = 1000;
 let lastTime = 0;
@@ -160,22 +212,39 @@ let lastTime = 0;
 function update(time = 0) {
     const deltaTime = time - lastTime;
     lastTime = time;
-
     dropCounter += deltaTime;
     if (dropCounter > dropInterval) {
         playerDrop();
     }
-
     draw();
     requestAnimationFrame(update);
 }
 
-// 監聽鍵盤
+function draw() {
+    context.fillStyle = '#000';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    drawMatrix(arena, {x: 0, y: 0}, context);
+    drawMatrix(player.matrix, player.pos, context);
+}
+
+function drawMatrix(matrix, offset, ctx) {
+    matrix.forEach((row, y) => {
+        row.forEach((value, x) => {
+            if (value !== 0) {
+                ctx.fillStyle = colors[value];
+                ctx.fillRect(x + offset.x, y + offset.y, 1, 1);
+            }
+        });
+    });
+}
+
 document.addEventListener('keydown', event => {
-    if (event.keyCode === 37) playerMove(-1); // 左
-    else if (event.keyCode === 39) playerMove(1); // 右
-    else if (event.keyCode === 40) playerDrop(); // 下
-    else if (event.keyCode === 38) playerRotate(1); // 上 (旋轉)
+    if (event.keyCode === 37) playerMove(-1);        // Left
+    else if (event.keyCode === 39) playerMove(1);     // Right
+    else if (event.keyCode === 40) playerDrop();      // Down
+    else if (event.keyCode === 38) playerRotate(1);   // Up (Rotate)
+    else if (event.keyCode === 32) hardDrop();        // Space (Hard Drop)
+    else if (event.keyCode === 16) playerHold();      // Shift (Hold)
 });
 
 playerReset();
