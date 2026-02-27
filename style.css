@@ -16,17 +16,16 @@ body {
     flex-direction: row;
     align-items: flex-start;
     justify-content: center;
-    gap: 30px;
-    padding: 20px;
+    gap: 20px;
+    padding: 10px;
 }
 
 .side-panel {
     background: #16213e;
-    padding: 15px;
-    border-radius: 10px;
+    padding: 10px;
+    border-radius: 8px;
     border: 2px solid #484b6a;
     text-align: center;
-    min-width: 120px;
 }
 
 .main-panel {
@@ -34,31 +33,38 @@ body {
 }
 
 canvas {
-    border: 3px solid #fff;
+    border: 2px solid #fff;
     background-color: #000;
     display: block;
+    image-rendering: pixelated; /* 讓方塊邊緣銳利 */
 }
 
+/* 強制畫布顯示比例 */
 #tetris {
-    height: 400px; /* 寬 240, 高 400 是 12:20 的完美比例 */
     width: 240px;
+    height: 400px;
 }
 
-h3 { margin: 0 0 10px 0; font-size: 1rem; color: #00d2ff; }
-h1 { margin: 0 0 10px 0; letter-spacing: 5px; color: #e94560; font-size: 2.5rem; }
-
-.info {
-    margin-top: 10px;
-    font-size: 1.5rem;
-    font-weight: bold;
+#holdCanvas {
+    width: 100px;
+    height: 100px;
 }
+
+#nextCanvas {
+    width: 100px;
+    height: 400px;
+}
+
+h3 { margin: 0 0 8px 0; font-size: 0.9rem; color: #00d2ff; }
+h1 { margin: 0 0 10px 0; letter-spacing: 3px; color: #e94560; font-size: 2rem; }
+
+.info { margin-top: 10px; font-size: 1.2rem; }
 
 .controls-hint {
-    margin-top: 20px;
+    margin-top: 15px;
     color: #888;
-    background: rgba(255,255,255,0.1);
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.9rem;
+    background: rgba(255,255,255,0.05);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-size: 0.8rem;
 }
-
