@@ -2,17 +2,34 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <title>俄羅斯方塊 Tetris</title>
+    <title>專業俄羅斯方塊</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-container">
-        <h1>俄羅斯方塊</h1>
-        <canvas id="tetris" width="240" height="400"></canvas>
-        <div class="info">
-            <p>得分: <span id="score">0</span></p>
-            <p>控制：方向鍵移動 & 旋轉</p>
+    <div class="game-wrapper">
+        <!-- 左側：暫存區 -->
+        <div class="side-panel">
+            <h3>暫存 (Shift)</h3>
+            <canvas id="holdCanvas" width="100" height="100"></canvas>
         </div>
+
+        <!-- 中間：主遊戲區 -->
+        <div class="main-panel">
+            <h1>TETRIS</h1>
+            <canvas id="tetris" width="240" height="400"></canvas>
+            <div class="info">
+                <p>得分: <span id="score">0</span></p>
+            </div>
+        </div>
+
+        <!-- 右側：預覽區 -->
+        <div class="side-panel">
+            <h3>下一個</h3>
+            <canvas id="nextCanvas" width="100" height="400"></canvas>
+        </div>
+    </div>
+    <div class="controls-hint">
+        空白鍵：直接下墜 | Shift：暫存方塊 | 方向鍵：移動與旋轉
     </div>
     <script src="script.js"></script>
 </body>
