@@ -1,19 +1,23 @@
 body {
     background: #1a1a2e;
     color: #fff;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    overflow: hidden;
 }
 
 .game-wrapper {
     display: flex;
-    gap: 20px;
+    flex-direction: row;
     align-items: flex-start;
+    justify-content: center;
+    gap: 30px;
+    padding: 20px;
 }
 
 .side-panel {
@@ -22,22 +26,37 @@ body {
     border-radius: 10px;
     border: 2px solid #484b6a;
     text-align: center;
+    min-width: 120px;
+}
+
+.main-panel {
+    text-align: center;
 }
 
 canvas {
     border: 3px solid #fff;
     background-color: #000;
+    display: block;
 }
 
 #tetris {
     height: 500px;
 }
 
-h3 { margin-top: 0; font-size: 1rem; color: #00d2ff; }
-h1 { margin: 0 0 10px 0; letter-spacing: 5px; color: #e94560; }
+h3 { margin: 0 0 10px 0; font-size: 1rem; color: #00d2ff; }
+h1 { margin: 0 0 10px 0; letter-spacing: 5px; color: #e94560; font-size: 2.5rem; }
+
+.info {
+    margin-top: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
 
 .controls-hint {
     margin-top: 20px;
     color: #888;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 20px;
     font-size: 0.9rem;
 }
