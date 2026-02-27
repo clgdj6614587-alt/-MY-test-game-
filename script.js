@@ -4,11 +4,12 @@ const holdCanvas = document.getElementById('holdCanvas');
 const holdCtx = holdCanvas.getContext('2d');
 const nextCanvas = document.getElementById('nextCanvas');
 const nextCtx = nextCanvas.getContext('2d');
-const scoreElement = document.getElementById('score');
 
-context.scale(20, 20);
-holdCtx.scale(20, 20);
-nextCtx.scale(20, 20);
+// 縮放設定
+context.scale(20, 20);      // 主畫面 240/20 = 12格寬
+holdCtx.scale(20, 20);     // 暫存畫面 100/20 = 5格寬
+nextCtx.scale(20, 20);     // 預覽畫面 100/20 = 5格寬
+
 
 const colors = [null, '#FF0D72', '#0DC2FF', '#0DFF72', '#F538FF', '#FF8E0D', '#FFE138', '#3877FF'];
 
@@ -249,3 +250,4 @@ document.addEventListener('keydown', event => {
 
 playerReset();
 update();
+
