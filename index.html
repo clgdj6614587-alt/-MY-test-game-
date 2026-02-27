@@ -1,36 +1,69 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
-<head>
-    <meta charset="UTF-8">
-    <title>專業俄羅斯方塊</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="game-wrapper">
-        <!-- 左側：暫存區 -->
-        <div class="side-panel">
-            <h3>暫存 (Shift)</h3>
-            <canvas id="holdCanvas" width="100" height="100"></canvas>
-        </div>
+body {
+    background: #1a1a2e;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    overflow: hidden; /* 防止捲軸干擾 */
+}
 
-        <!-- 中間：主遊戲區 -->
-        <div class="main-panel">
-            <h1>TETRIS</h1>
-            <canvas id="tetris" width="240" height="400"></canvas>
-            <div class="info">
-                <p>得分: <span id="score">0</span></p>
-            </div>
-        </div>
+/* 這是最關鍵的容器，確保內容橫向排列 */
+.game-wrapper {
+    display: flex;
+    flex-direction: row; /* 強制橫向 */
+    align-items: flex-start;
+    justify-content: center;
+    gap: 30px; /* 每個面板之間的間距 */
+    padding: 20px;
+}
 
-        <!-- 右側：預覽區 -->
-        <div class="side-panel">
-            <h3>下一個</h3>
-            <canvas id="nextCanvas" width="100" height="400"></canvas>
-        </div>
-    </div>
-    <div class="controls-hint">
-        空白鍵：直接下墜 | Shift：暫存方塊 | 方向鍵：移動與旋轉
-    </div>
-    <script src="script.js"></script>
-</body>
-</html>
+.side-panel {
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #484b6a;
+    text-align: center;
+    min-width: 120px;
+}
+
+.main-panel {
+    text-align: center;
+}
+
+canvas {
+    border: 3px solid #fff;
+    background-color: #000;
+    display: block;
+}
+
+/* 主遊戲畫面大小 */
+#tetris {
+    height: 500px; /* 設定固定高度讓它看起來比例正常 */
+}
+
+/* 側邊小畫面大小 */
+#holdCanvas, #nextCanvas {
+    margin: 0 auto;
+}
+
+h3 { margin: 0 0 10px 0; font-size: 1rem; color: #00d2ff; }
+h1 { margin: 0 0 10px 0; letter-spacing: 5px; color: #e94560; font-size: 2.5rem; }
+
+.info {
+    margin-top: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.controls-hint {
+    margin-top: 20px;
+    color: #888;
+    background: rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
