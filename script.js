@@ -318,13 +318,3 @@ document.addEventListener('keydown', event => {
 
 playerReset();
 update();
-```
-
-### 2. 更新後的 `style.css` (微調高度)
-為了讓格子看起來是完美的正方形，我們需要微調一下畫布的高度顯示比例。
-
-```css
-#tetris {
-    height: 400px; /* 寬 240, 高 400 是 12:20 的完美比例 */
-    width: 240px;
-}
