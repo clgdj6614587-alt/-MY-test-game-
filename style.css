@@ -1,24 +1,43 @@
 body {
-    background: #202028;
+    background: #1a1a2e;
     color: #fff;
-    font-family: sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     height: 100vh;
     margin: 0;
 }
 
-.game-container {
+.game-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.side-panel {
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid #484b6a;
     text-align: center;
 }
 
 canvas {
-    border: solid 2px #fff;
-    height: 80vh; /* 讓畫布隨視窗縮放 */
+    border: 3px solid #fff;
+    background-color: #000;
 }
 
-.info {
-    margin-top: 10px;
-    font-size: 1.2rem;
+#tetris {
+    height: 500px;
+}
+
+h3 { margin-top: 0; font-size: 1rem; color: #00d2ff; }
+h1 { margin: 0 0 10px 0; letter-spacing: 5px; color: #e94560; }
+
+.controls-hint {
+    margin-top: 20px;
+    color: #888;
+    font-size: 0.9rem;
 }
